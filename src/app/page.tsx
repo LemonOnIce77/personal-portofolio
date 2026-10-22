@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 
 const headingFont = Plus_Jakarta_Sans({
@@ -21,8 +22,8 @@ interface Project {
 
 const portfolioData = {
   name: "Muhammad Yaumil Aditya Warman",
-  role: "Information Systems Student & Tech Enthusiast",
-  bio: "Mahasiswa Sistem Informasi yang antusias dalam web development, perancangan sistem, dan eksplorasi teknologi modern. Senang membangun solusi digital yang fungsional dan terstruktur.",
+  role: "Information Systems Student & Business Tech Enthusiast",
+  bio: "An Information Systems student passionate about web development, system design, and exploring modern technology. I enjoy building digital solutions that are functional and well structured.",
   socials: {
     github: "https://github.com",
     linkedin: "https://linkedin.com",
@@ -42,19 +43,19 @@ const portfolioData = {
   projects: [
     {
       title: "Mentora",
-      description: "Platform peer-tutoring dan pertukaran keahlian antar mahasiswa berbasis web yang interaktif.",
+      description: "An interactive web platform for peer tutoring and skill sharing among university students.",
       tags: ["Next.js", "TypeScript", "Prisma", "Tailwind CSS"],
       github: "https://github.com",
     },
     {
       title: "ParkiRek",
-      description: "Sistem informasi manajemen parkir digital terintegrasi untuk efisiensi mobilitas kampus.",
+      description: "An integrated digital parking management system designed to improve campus mobility.",
       tags: ["Laravel", "PHP", "Bootstrap", "MySQL"],
       github: "https://github.com",
     },
     {
       title: "Cashless Payment Case Study",
-      description: "Riset analisis proses bisnis integrasi payment gateway digital untuk optimasi alur transaksi.",
+      description: "A business process analysis of digital payment gateway integration to streamline transactions.",
       tags: ["Business Analysis", "Figma", "Process Flow"],
       link: "https://notion.so",
     },
@@ -112,46 +113,87 @@ export default function Home() {
   const { name, role, bio, socials, skills, projects } = portfolioData;
 
   return (
-    <div className={`min-h-screen flex flex-col justify-between bg-neutral-950 text-neutral-100 ${bodyFont.className}`}>
+    <div className={`relative isolate min-h-screen flex flex-col justify-between bg-[#070709] text-neutral-100 overflow-hidden ${bodyFont.className}`}>
       
+      {/* Softly shifting color with a fine polka-dot texture */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 background-aurora" />
+        <div className="aurora-orb aurora-orb-purple" />
+        <div className="aurora-orb aurora-orb-red" />
+        <div className="aurora-orb aurora-orb-orange" />
+        <div
+          className="absolute inset-0 opacity-[0.18]"
+          style={{
+            backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.32) 0.7px, transparent 0.9px)",
+            backgroundSize: "10px 10px",
+          }}
+        />
+      </div>
+
       {/* Header / Navbar */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-neutral-950/70 border-b border-neutral-800/80">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className={`${headingFont.className} font-bold text-neutral-100 hover:text-white transition`}>
-            emil<span className="text-neutral-500">.dev</span>
+      <header className="sticky top-0 z-50 px-1 sm:px-2 pt-3 pb-2">
+        <div className="liquid-glass max-w-6xl mx-auto pl-0.5 pr-6 sm:pl-1 sm:pr-8 h-20 rounded-2xl flex items-center justify-between">
+          <Link href="/" className={`${headingFont.className} text-xl sm:text-2xl font-extrabold tracking-tight text-neutral-100 hover:text-white transition`}>
+            Emil<span className="text-purple-400">Aditya</span>
           </Link>
-          <nav className="flex items-center gap-6 text-sm text-neutral-400">
-            <Link href="#about" className="hover:text-neutral-100 transition duration-200">Tentang</Link>
-            <Link href="#projects" className="hover:text-neutral-100 transition duration-200">Proyek</Link>
-            <Link href="#skills" className="hover:text-neutral-100 transition duration-200">Skills</Link>
-            <Link href="#contact" className="hover:text-neutral-100 transition duration-200">Kontak</Link>
+          <nav className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base font-medium text-neutral-400">
+            <Link href="#about" className="px-3 py-2 rounded-lg hover:bg-white/[0.06] hover:text-white transition duration-200">About</Link>
+            <Link href="#projects" className="px-3 py-2 rounded-lg hover:bg-white/[0.06] hover:text-white transition duration-200">Project</Link>
+            <Link href="#skills" className="px-3 py-2 rounded-lg hover:bg-white/[0.06] hover:text-white transition duration-200">Skills</Link>
+            <Link href="#contact" className="px-3 py-2 rounded-lg text-purple-200 hover:bg-purple-400/10 hover:text-white transition duration-200">Contact</Link>
           </nav>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-6 py-12 flex-1 w-full space-y-24">
-        {/* Hero Section */}
-        <section id="about" className="pt-8 animate-fade-in opacity-0">
-          <div className="space-y-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300">
+      <main className="relative z-10 max-w-4xl mx-auto px-6 py-12 flex-1 w-full space-y-24">
+        {/* Hero Section (Centered with Photo) */}
+        <section id="about" className="pt-8 text-center flex flex-col items-center animate-fade-in opacity-0">
+          <div className="flex flex-col items-center gap-5 max-w-2xl">
+            {/* Foto Profil dengan Ring Glow Ungu */}
+            <div className="relative group mb-3">
+              {/* Aura Glow di belakang foto */}
+              <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-400 to-indigo-500 opacity-75 blur-lg group-hover:opacity-100 transition duration-500 animate-pulse" />
+              
+              <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-purple-300/80 bg-neutral-900 shadow-[0_0_22px_rgba(168,85,247,0.45)]">
+                <Image
+                  src="/Portofolio PFP.jpg"
+                  alt={name}
+                  fill
+                  sizes="160px"
+                  priority
+                  className="object-cover transition duration-300 group-hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Badge Status */}
+            <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono rounded-full bg-neutral-900/80 border border-neutral-800 text-neutral-300">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Available for collaborations
             </span>
-            <h1 className={`${headingFont.className} text-4xl sm:text-5xl font-bold tracking-tight text-neutral-100`}>
-              Halo, aku {name}.
+
+            {/* Title / Glowing Name */}
+            <h1 className={`${headingFont.className} text-4xl sm:text-5xl font-bold tracking-tight text-neutral-100 leading-tight`}>
+              Hello, I&apos;m{" "}
+              <span className="relative inline-block bg-gradient-to-r from-purple-300 via-purple-400 to-indigo-300 bg-clip-text text-transparent [text-shadow:0_0_25px_rgba(168,85,247,0.45)]">
+                {name}
+              </span>
             </h1>
+
+            {/* Role & Bio */}
             <p className="text-xl text-neutral-400 font-medium">{role}</p>
-            <p className="text-neutral-300 max-w-2xl leading-relaxed text-base pt-2">
+            <p className="text-neutral-300 leading-relaxed text-base">
               {bio}
             </p>
 
-            <div className="flex gap-4 pt-4">
+            {/* Social Links */}
+            <div className="flex gap-4 pt-2">
               <a
                 href={socials.github}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
+                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
                 aria-label="GitHub"
               >
                 <GithubIcon className="w-5 h-5" />
@@ -160,14 +202,14 @@ export default function Home() {
                 href={socials.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
+                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
                 aria-label="LinkedIn"
               >
                 <LinkedinIcon className="w-5 h-5" />
               </a>
               <a
                 href={socials.email}
-                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
+                className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-neutral-600 hover:-translate-y-0.5 transition duration-200"
                 aria-label="Email"
               >
                 <MailIcon className="w-5 h-5" />
@@ -181,7 +223,7 @@ export default function Home() {
           <div>
             <h2 className={`${headingFont.className} text-2xl font-bold tracking-tight`}>Featured Projects</h2>
             <p className="text-neutral-400 text-sm mt-1">
-              Beberapa proyek dan eksplorasi yang pernah saya kembangkan.
+              A selection of projects and experiments I&apos;ve worked on.
             </p>
           </div>
 
@@ -189,7 +231,7 @@ export default function Home() {
             {projects.map((project: Project, index: number) => (
               <div
                 key={index}
-                className="p-6 rounded-xl border border-neutral-800 bg-neutral-900/40 hover:border-neutral-700 hover:bg-neutral-900/80 hover:-translate-y-1 transition duration-200 flex flex-col justify-between group shadow-sm"
+                className="p-6 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:border-purple-500/50 hover:bg-neutral-900/60 hover:-translate-y-1 transition duration-200 flex flex-col justify-between group shadow-sm backdrop-blur-sm"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -233,13 +275,13 @@ export default function Home() {
         <section id="skills" className="space-y-6 animate-fade-in opacity-0 delay-200">
           <div>
             <h2 className={`${headingFont.className} text-2xl font-bold tracking-tight`}>Skills & Tech Stack</h2>
-            <p className="text-neutral-400 text-sm mt-1">Teknologi dan tools yang sering saya gunakan.</p>
+            <p className="text-neutral-400 text-sm mt-1">Technologies and tools I use regularly.</p>
           </div>
           <div className="flex flex-wrap gap-2.5">
             {skills.map((skill: string) => (
               <span
                 key={skill}
-                className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 text-sm hover:border-neutral-700 hover:scale-105 transition duration-200 cursor-default"
+                className="px-4 py-2 rounded-lg bg-neutral-900/50 border border-neutral-800 text-neutral-300 text-sm hover:border-purple-500/40 hover:scale-105 transition duration-200 cursor-default backdrop-blur-sm"
               >
                 {skill}
               </span>
@@ -248,26 +290,26 @@ export default function Home() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="py-12 border-t border-neutral-900 text-center space-y-4 animate-fade-in opacity-0 delay-300">
-          <h2 className={`${headingFont.className} text-2xl font-bold tracking-tight`}>Ayo Terhubung</h2>
-          <p className="text-neutral-400 max-w-md mx-auto text-sm">
-            Tertarik untuk berdiskusi seputar teknologi, project ideas, atau sekadar bertukar sapa?
+        <section id="contact" className="dynamic-stroke relative py-16 text-center space-y-6 animate-fade-in opacity-0 delay-300">
+          <h2 className={`${headingFont.className} text-3xl sm:text-4xl font-bold tracking-tight`}>Let's Connect</h2>
+          <p className="text-neutral-400 max-w-lg mx-auto text-base leading-relaxed">
+            Interested in discussing technology, project ideas, or just saying hello?
           </p>
           <div>
             <a
               href={socials.email}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-sm hover:bg-neutral-200 hover:scale-105 transition duration-200"
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-base hover:bg-neutral-200 hover:scale-105 transition duration-200 shadow-lg shadow-purple-900/20"
             >
-              <MailIcon className="w-4 h-4" /> Kirim Pesan
+              <MailIcon className="w-5 h-5" /> Send a Message
             </a>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-900 py-6 text-center text-xs text-neutral-500">
+      <footer className="relative z-10 border-t border-neutral-900/80 py-6 text-center text-xs text-neutral-500">
         © {new Date().getFullYear()} {name}. Built with Next.js & Tailwind CSS.
       </footer>
     </div>
   );
-} 
+}

@@ -16,6 +16,17 @@ body {
   color: #f5f5f5;
 }
 
+.liquid-glass {
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035) 45%, rgba(168, 85, 247, 0.055));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(24px) saturate(155%);
+  backdrop-filter: blur(24px) saturate(155%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 12px 36px rgba(0, 0, 0, 0.24),
+    0 0 24px rgba(168, 85, 247, 0.06);
+}
+
 /* Animasi Masuk Halus */
 @keyframes fadeInUp {
   from {
@@ -65,4 +76,92 @@ body {
 
 .animate-blob-2 {
   animation: driftGradient 12s ease-in-out infinite;
+}
+
+.background-aurora {
+  background-image:
+    radial-gradient(ellipse at 18% 18%, rgba(126, 34, 206, 0.34), transparent 48%),
+    radial-gradient(ellipse at 82% 38%, rgba(220, 38, 38, 0.24), transparent 46%),
+    radial-gradient(ellipse at 48% 100%, rgba(249, 115, 22, 0.2), transparent 48%);
+  background-size: 160% 160%;
+  animation: aurora-shift 18s ease-in-out infinite alternate;
+}
+
+.aurora-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.aurora-orb-purple {
+  top: 4%;
+  left: 4%;
+  width: min(42vw, 520px);
+  aspect-ratio: 1;
+  background: rgba(147, 51, 234, 0.28);
+  animation: orb-purple-drift 17s ease-in-out infinite alternate;
+}
+
+.aurora-orb-red {
+  top: 22%;
+  right: 2%;
+  width: min(38vw, 480px);
+  aspect-ratio: 1;
+  background: rgba(220, 38, 38, 0.22);
+  animation: orb-red-drift 21s ease-in-out infinite alternate;
+}
+
+.aurora-orb-orange {
+  bottom: -16%;
+  left: 32%;
+  width: min(36vw, 440px);
+  aspect-ratio: 1;
+  background: rgba(249, 115, 22, 0.2);
+  animation: orb-orange-drift 19s ease-in-out infinite alternate;
+}
+
+@keyframes orb-purple-drift {
+  to { transform: translate(18vw, 14vh) scale(1.18); }
+}
+
+@keyframes orb-red-drift {
+  to { transform: translate(-16vw, 18vh) scale(1.22); }
+}
+
+@keyframes orb-orange-drift {
+  to { transform: translate(12vw, -18vh) scale(1.16); }
+}
+
+.dynamic-stroke::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #a855f7, #ef4444, #f97316, #a855f7, transparent);
+  background-size: 200% 100%;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.4);
+  animation: contact-stroke-shift 8s linear infinite;
+}
+
+@keyframes contact-stroke-shift {
+  from { background-position: 0% 50%; }
+  to { background-position: 200% 50%; }
+}
+
+@keyframes aurora-shift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 35%; }
+  100% { background-position: 20% 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .background-aurora,
+  .aurora-orb,
+  .dynamic-stroke::before {
+    animation: none;
+  }
 }
