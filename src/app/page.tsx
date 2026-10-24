@@ -7,6 +7,12 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { submitContactForm } from "./actions";
 import { useRouter } from "next/navigation";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 
 const headingFont = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -25,6 +31,7 @@ interface Project {
   tags: string[];
   github?: string | null;
   link?: string | null;
+  order_index?: number;
 }
 
 const portfolioData = {
@@ -139,6 +146,10 @@ function CodeIcon({ className = "w-4 h-4" }: { className?: string }) {
 export default function Home() {
   const { name, role, bio, socials, skills } = portfolioData;
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // --- STATE DATA & ADMIN ---
   const [isAdmin, setIsAdmin] = useState(false);
@@ -229,17 +240,18 @@ export default function Home() {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .order("id", { ascending: true });
+      .order("order_index", { ascending: true }); // Mengurutkan berdasarkan order_index
 
     if (!error && data) {
       setProjects(
-        data.map((project) => ({
+        data.map((project, idx) => ({
           id: project.id,
           title: project.title ?? "",
           description: project.description ?? "",
           tags: Array.isArray(project.tags) ? project.tags : [],
           link: project.link ?? null,
           github: project.github ?? null,
+          order_index: project.order_index ?? idx,
         })),
       );
     }
@@ -268,6 +280,37 @@ export default function Home() {
       authListener.subscription.unsubscribe();
     };
   }, [loadProjects]);
+
+  const handleDragEnd = async (result: DropResult) => {
+    if (!result.destination || !isAdmin) return;
+    if (result.destination.index === result.source.index) return;
+
+    const reordered = Array.from(projects);
+    const [removed] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, removed);
+
+    const updatedProjects = reordered.map((proj, idx) => ({
+      ...proj,
+      order_index: idx + 1,
+    }));
+
+    // 1. Update UI seketika tanpa jeda
+    setProjects(updatedProjects);
+
+    // 2. Kirim update ke Supabase secara paralel di latar belakang
+    try {
+      await Promise.all(
+        updatedProjects.map((proj) =>
+          supabase
+            .from("projects")
+            .update({ order_index: proj.order_index })
+            .eq("id", proj.id),
+        ),
+      );
+    } catch (err) {
+      console.error("Gagal menyimpan urutan:", err);
+    }
+  };
 
   // --- HANDLER LOGIN ADMIN ---
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -501,40 +544,36 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Badge Status BARU (Switchable khusus Admin) */}
-            <button
-              type="button"
-              onClick={handleToggleAvailability}
-              disabled={!isAdmin || isTogglingAvailability}
-              title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
-              className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
-                isAvailable
-                  ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
-                  : "bg-neutral-900/80 border-neutral-800 text-neutral-400"
-              } ${
-                isAdmin
-                  ? "cursor-pointer hover:border-purple-500 hover:scale-105 active:scale-95 ring-1 ring-purple-500/30"
-                  : "cursor-default"
-              }`}
-            >
-              <span
-                className={`w-2 h-2 rounded-full shrink-0 ${
-                  isAvailable
-                    ? "bg-emerald-400 animate-pulse"
-                    : "bg-neutral-600"
-                }`}
-              />
-              <span>
-                {isAvailable
-                  ? "Available for collaborations"
-                  : "Currently focused on ongoing projects"}
-              </span>
-              {isAdmin && (
-                <span className="text-[9px] px-1 py-0.2 rounded bg-purple-900/60 text-purple-200 ml-1">
-                  {isTogglingAvailability ? "..." : "switch"}
-                </span>
-              )}
-            </button>
+            {/* Badge Status (Switchable khusus Admin) */}
+<button
+  type="button"
+  onClick={handleToggleAvailability}
+  disabled={!isAdmin || isTogglingAvailability}
+  title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
+  className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
+    isAvailable
+      ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
+      : "bg-sky-950/30 border-sky-500/40 text-sky-200"
+  } ${
+    isAdmin
+      ? "cursor-pointer hover:border-sky-400 hover:scale-105 active:scale-95 ring-1 ring-sky-500/30"
+      : "cursor-default"
+  }`}
+>
+  <span
+    className={`w-2 h-2 rounded-full shrink-0 ${
+      isAvailable ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
+    }`}
+  />
+  <span>
+    {isAvailable ? "Available for collaborations" : "Currently focused on ongoing projects"}
+  </span>
+  {isAdmin && (
+    <span className="text-[9px] px-1 py-0.2 rounded bg-sky-900/60 text-sky-200 ml-1">
+      {isTogglingAvailability ? "..." : "switch"}
+    </span>
+  )}
+</button>
 
             {/* Title */}
             <h1
@@ -621,102 +660,155 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {isLoadingProjects ? (
-              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
-                Memuat proyek dari database...
-              </p>
-            ) : projects.length === 0 ? (
-              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
-                Belum ada proyek yang tersedia.
-              </p>
-            ) : (
-              projects.map((project, index) => (
-                <div
-                  key={project.id || index}
-                  className="relative p-5 sm:p-6 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:border-purple-500/50 hover:bg-neutral-900/60 transition duration-200 flex flex-col justify-between group shadow-sm backdrop-blur-sm"
-                >
-                  {/* Action Buttons Khusus Admin (posisi disesuaikan agar tidak menabrak judul di mobile) */}
-                  {isAdmin && (
-                    <div className="flex sm:absolute sm:top-4 sm:right-4 z-20 items-center gap-1.5 mb-3 sm:mb-0 justify-end">
-                      <button
-                        onClick={() => {
-                          setEditingProject({
-                            id: project.id,
-                            title: project.title,
-                            description: project.description,
-                            tags: project.tags ? project.tags.join(", ") : "",
-                            github: project.github || "",
-                            link: project.link || "",
-                          });
-                          setIsProjectModalOpen(true);
-                        }}
-                        className="px-2.5 py-1 text-[11px] bg-neutral-800/90 border border-neutral-700 text-neutral-200 rounded hover:border-purple-400 transition"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDeleteProject(project.id, project.title)
-                        }
-                        className="px-2.5 py-1 text-[11px] bg-red-950/80 border border-red-800/60 text-red-300 rounded hover:bg-red-900 transition"
-                      >
-                        Hapus
-                      </button>
-                    </div>
-                  )}
+          {/* Pastikan DragDropContext membungkus Droppable */}
+          {isMounted && (
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="projects-list" isDropDisabled={!isAdmin}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-colors duration-200 rounded-2xl p-1 ${
+                      snapshot.isDraggingOver
+                        ? "bg-purple-950/10 ring-1 ring-purple-500/20"
+                        : ""
+                    }`}
+                  >
+                    {isLoadingProjects ? (
+                      <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
+                        Memuat proyek dari database...
+                      </p>
+                    ) : projects.length === 0 ? (
+                      <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
+                        Belum ada proyek yang tersedia.
+                      </p>
+                    ) : (
+                      projects.map((project, index) => (
+                        <Draggable
+                          key={project.id}
+                          draggableId={String(project.id)}
+                          index={index}
+                          isDragDisabled={!isAdmin}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                willChange: "transform",
+                              }}
+                              className={`relative p-5 sm:p-6 rounded-xl border bg-neutral-900/30 flex flex-col justify-between group shadow-sm backdrop-blur-sm ${
+                                snapshot.isDragging
+                                  ? "border-purple-500 bg-neutral-900/95 shadow-2xl scale-[1.03] z-50 ring-2 ring-purple-500/60 !transition-none cursor-grabbing"
+                                  : "border-neutral-800/80 hover:border-purple-500/50 hover:bg-neutral-900/60 transition-[border-color,background-color] duration-200"
+                              }`}
+                            >
+                              {/* Action Bar Admin + Handle Drag */}
+                              {isAdmin && (
+                                <div className="flex sm:absolute sm:top-4 sm:right-4 z-20 items-center gap-1.5 mb-3 sm:mb-0 justify-between sm:justify-end">
+                                  <span
+                                    {...provided.dragHandleProps}
+                                    title="Tahan & geser untuk atur posisi"
+                                    className="cursor-grab active:cursor-grabbing p-1 text-neutral-400 hover:text-purple-300 transition select-none flex items-center gap-1 text-[11px] font-mono bg-neutral-950/60 px-2 py-0.5 rounded border border-neutral-800"
+                                  >
+                                    ⠿ Geser
+                                  </span>
 
-                  <div>
-                    <div className="flex items-start justify-between gap-3">
-                      <h3
-                        className={`${headingFont.className} font-bold text-base sm:text-lg text-neutral-100 group-hover:text-white transition leading-snug`}
-                      >
-                        {project.title}
-                      </h3>
-                      <div className="flex gap-2 shrink-0 pt-0.5">
-                        {project.github && (
-                          <a
-                            href={project.github}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-neutral-400 hover:text-white transition p-1"
-                            aria-label="Github link"
-                          >
-                            <CodeIcon className="w-4 h-4" />
-                          </a>
-                        )}
-                        {project.link && (
-                          <a
-                            href={project.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-neutral-400 hover:text-white transition p-1"
-                            aria-label="Demo link"
-                          >
-                            <ExternalLinkIcon className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-neutral-400 text-xs sm:text-sm mt-2.5 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingProject({
+                                          id: project.id,
+                                          title: project.title,
+                                          description: project.description,
+                                          tags: project.tags
+                                            ? project.tags.join(", ")
+                                            : "",
+                                          github: project.github || "",
+                                          link: project.link || "",
+                                        });
+                                        setIsProjectModalOpen(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] bg-neutral-800/90 border border-neutral-700 text-neutral-200 rounded hover:border-purple-400 transition"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleDeleteProject(
+                                          project.id,
+                                          project.title,
+                                        )
+                                      }
+                                      className="px-2.5 py-1 text-[11px] bg-red-950/80 border border-red-800/60 text-red-300 rounded hover:bg-red-900 transition"
+                                    >
+                                      Hapus
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
 
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 sm:mt-6">
-                    {project.tags.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-neutral-800/60 text-neutral-300 border border-neutral-800 font-mono"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                              <div>
+                                <div className="flex items-start justify-between gap-3">
+                                  <h3
+                                    className={`${headingFont.className} font-bold text-base sm:text-lg text-neutral-100 group-hover:text-white transition leading-snug`}
+                                  >
+                                    {project.title}
+                                  </h3>
+                                  <div className="flex gap-2 shrink-0 pt-0.5">
+                                    {project.github && (
+                                      <a
+                                        href={project.github}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-neutral-400 hover:text-white transition p-1"
+                                        aria-label="Github link"
+                                      >
+                                        <CodeIcon className="w-4 h-4" />
+                                      </a>
+                                    )}
+                                    {project.link && (
+                                      <a
+                                        href={project.link}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-neutral-400 hover:text-white transition p-1"
+                                        aria-label="Demo link"
+                                      >
+                                        <ExternalLinkIcon className="w-4 h-4" />
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="text-neutral-400 text-xs sm:text-sm mt-2.5 leading-relaxed">
+                                  {project.description}
+                                </p>
+                              </div>
+
+                              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 sm:mt-6">
+                                {project.tags.map((tag: string) => (
+                                  <span
+                                    key={tag}
+                                    className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-neutral-800/60 text-neutral-300 border border-neutral-800 font-mono"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
                   </div>
-                </div>
-              ))
-            )}
-          </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          )}
         </section>
 
         {/* Skills Section */}
