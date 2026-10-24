@@ -60,7 +60,7 @@ export default async function Image() {
               }}
             />
             <span style={{ color: "#e0f2fe", fontWeight: 500 }}>
-              Software Development & Tech
+              Business & Tech Enthusiast
             </span>
           </div>
         </div>
@@ -87,8 +87,7 @@ export default async function Image() {
               maxWidth: "900px",
             }}
           >
-            Personal Developer Portfolio — Building scalable web applications, 
-            interactive user interfaces, and modular backend architectures.
+            Exploring how business, products, and technology come together to create meaningful solutions.
           </p>
         </div>
 
