@@ -51,7 +51,15 @@ const portfolioData = {
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
       <path d="M9 18c-4.51 2-5-2-7-2" />
     </svg>
@@ -60,7 +68,15 @@ function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
       <rect width="4" height="12" x="2" y="9" />
       <circle cx="4" cy="4" r="2" />
@@ -70,7 +86,15 @@ function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 function MailIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect width="20" height="16" x="2" y="4" rx="2" />
       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
@@ -79,7 +103,15 @@ function MailIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 function ExternalLinkIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M15 3h6v6" />
       <path d="M10 14 21 3" />
       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -89,7 +121,15 @@ function ExternalLinkIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 function CodeIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polyline points="16 18 22 12 16 6" />
       <polyline points="8 6 2 12 8 18" />
     </svg>
@@ -104,6 +144,8 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [isTogglingAvailability, setIsTogglingAvailability] = useState(false);
 
   // Modal Login Admin
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -126,10 +168,62 @@ export default function Home() {
 
   // Form Kontak
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   // --- FETCH DATA PROYEK ---
+  // Ambil status saat web dimuat
+  const loadSiteSettings = useCallback(async () => {
+    const { data } = await supabase
+      .from("site_settings")
+      .select("is_available")
+      .eq("id", 1)
+      .single();
+
+    if (data !== null && data !== undefined) {
+      setIsAvailable(data.is_available);
+    }
+  }, []);
+
+  // Jalankan fungsi load di useEffect
+  useEffect(() => {
+    loadSiteSettings();
+  }, [loadSiteSettings]);
+
+  const handleToggleAvailability = async () => {
+    // Cek apakah admin aktif
+    if (!isAdmin) {
+      alert(
+        "Kamu belum login sebagai admin. Klik simbol © di footer untuk login.",
+      );
+      return;
+    }
+
+    if (isTogglingAvailability) return;
+
+    const nextState = !isAvailable;
+    setIsTogglingAvailability(true);
+
+    // Update ke database
+    const { error } = await supabase
+      .from("site_settings")
+      .update({
+        is_available: nextState,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", 1);
+
+    if (error) {
+      alert("Gagal memperbarui status: " + error.message);
+    } else {
+      setIsAvailable(nextState);
+    }
+
+    setIsTogglingAvailability(false);
+  };
+
   const loadProjects = useCallback(async () => {
     setIsLoadingProjects(true);
     const { data, error } = await supabase
@@ -146,7 +240,7 @@ export default function Home() {
           tags: Array.isArray(project.tags) ? project.tags : [],
           link: project.link ?? null,
           github: project.github ?? null,
-        }))
+        })),
       );
     }
     setIsLoadingProjects(false);
@@ -157,14 +251,18 @@ export default function Home() {
     loadProjects();
 
     async function checkSession() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setIsAdmin(!!session);
     }
     checkSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAdmin(!!session);
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsAdmin(!!session);
+      },
+    );
 
     return () => {
       authListener.subscription.unsubscribe();
@@ -233,7 +331,10 @@ export default function Home() {
 
     const res = isNew
       ? await supabase.from("projects").insert([payload])
-      : await supabase.from("projects").update(payload).eq("id", editingProject.id);
+      : await supabase
+          .from("projects")
+          .update(payload)
+          .eq("id", editingProject.id);
 
     if (!res.error) {
       setIsProjectModalOpen(false);
@@ -274,8 +375,9 @@ export default function Home() {
   };
 
   return (
-    <div className={`relative isolate min-h-screen flex flex-col justify-between bg-[#070709] text-neutral-100 overflow-x-hidden ${bodyFont.className}`}>
-      
+    <div
+      className={`relative isolate min-h-screen flex flex-col justify-between bg-[#070709] text-neutral-100 overflow-x-hidden ${bodyFont.className}`}
+    >
       {/* Background Aurora Effect */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 background-aurora" />
@@ -285,7 +387,8 @@ export default function Home() {
         <div
           className="absolute inset-0 opacity-[0.18]"
           style={{
-            backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.32) 0.7px, transparent 0.9px)",
+            backgroundImage:
+              "radial-gradient(rgba(255, 255, 255, 0.32) 0.7px, transparent 0.9px)",
             backgroundSize: "10px 10px",
           }}
         />
@@ -298,7 +401,9 @@ export default function Home() {
           className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:bottom-auto sm:top-4 sm:right-4 z-50 flex items-center gap-2 sm:gap-2.5 bg-neutral-900/95 border border-purple-500/40 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-2xl animate-fade-in w-max max-w-[95vw]"
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="text-xs font-mono text-purple-300 font-medium whitespace-nowrap">Admin Mode</span>
+          <span className="text-xs font-mono text-purple-300 font-medium whitespace-nowrap">
+            Admin Mode
+          </span>
           <button
             onClick={() => {
               setEditingProject({
@@ -327,14 +432,16 @@ export default function Home() {
       {/* Header / Navbar */}
       <header className="sticky top-0 z-40 px-3 sm:px-4 pt-3 sm:pt-4 pb-2">
         <div className="liquid-glass max-w-6xl mx-auto h-14 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-between px-4 sm:px-8 border border-white/5 shadow-lg">
-          
           {/* Logo Personal Branding */}
-          <Link href="/" className="hover:opacity-80 transition duration-200 flex items-center">
-            <Image 
-              src="/Logo Personal Branding.png" 
-              alt="Brand Logo" 
-              width={180} 
-              height={60} 
+          <Link
+            href="/"
+            className="hover:opacity-80 transition duration-200 flex items-center"
+          >
+            <Image
+              src="/Logo Personal Branding.png"
+              alt="Brand Logo"
+              width={180}
+              height={60}
               priority
               className="h-9 sm:h-16 w-auto object-contain"
             />
@@ -342,25 +449,46 @@ export default function Home() {
 
           {/* Navigasi */}
           <nav className="flex items-center gap-1 sm:gap-2 text-xs sm:text-base font-medium text-white">
-            <Link href="#about" className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200">About</Link>
-            <Link href="#projects" className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200">Projects</Link>
-            <Link href="#skills" className="hidden sm:inline-block px-3 py-2 rounded-lg hover:bg-white/[0.15] transition duration-200">Skills</Link>
-            <Link href="#contact" className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-white bg-purple-500/20 hover:bg-purple-500/40 transition duration-200">Contact</Link>
+            <Link
+              href="#about"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200"
+            >
+              About
+            </Link>
+            <Link
+              href="#projects"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200"
+            >
+              Projects
+            </Link>
+            <Link
+              href="#skills"
+              className="hidden sm:inline-block px-3 py-2 rounded-lg hover:bg-white/[0.15] transition duration-200"
+            >
+              Skills
+            </Link>
+            <Link
+              href="#contact"
+              className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-white bg-purple-500/20 hover:bg-purple-500/40 transition duration-200"
+            >
+              Contact
+            </Link>
           </nav>
         </div>
       </header>
 
       {/* Main Container */}
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-16 flex-1 w-full space-y-16 sm:space-y-24">
-        
         {/* Hero Section */}
-        <section id="about" className="pt-4 sm:pt-8 text-center flex flex-col items-center animate-fade-in opacity-0">
+        <section
+          id="about"
+          className="pt-4 sm:pt-8 text-center flex flex-col items-center animate-fade-in opacity-0"
+        >
           <div className="flex flex-col items-center gap-4 sm:gap-5 max-w-3xl">
-            
             {/* Foto Profil */}
             <div className="relative group mb-2 sm:mb-3">
               <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-400 to-indigo-500 opacity-75 blur-lg group-hover:opacity-100 transition duration-500 animate-pulse" />
-              
+
               <div className="relative w-28 h-28 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-purple-300/80 bg-neutral-900 shadow-[0_0_22px_rgba(168,85,247,0.45)]">
                 <Image
                   src="/Portofolio PFP.jpg"
@@ -373,14 +501,45 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Badge Status */}
-            <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full bg-neutral-900/80 border border-neutral-800 text-neutral-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Available for collaborations
-            </span>
+            {/* Badge Status BARU (Switchable khusus Admin) */}
+            <button
+              type="button"
+              onClick={handleToggleAvailability}
+              disabled={!isAdmin || isTogglingAvailability}
+              title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
+                isAvailable
+                  ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
+                  : "bg-neutral-900/80 border-neutral-800 text-neutral-400"
+              } ${
+                isAdmin
+                  ? "cursor-pointer hover:border-purple-500 hover:scale-105 active:scale-95 ring-1 ring-purple-500/30"
+                  : "cursor-default"
+              }`}
+            >
+              <span
+                className={`w-2 h-2 rounded-full shrink-0 ${
+                  isAvailable
+                    ? "bg-emerald-400 animate-pulse"
+                    : "bg-neutral-600"
+                }`}
+              />
+              <span>
+                {isAvailable
+                  ? "Available for collaborations"
+                  : "Currently focused on ongoing projects"}
+              </span>
+              {isAdmin && (
+                <span className="text-[9px] px-1 py-0.2 rounded bg-purple-900/60 text-purple-200 ml-1">
+                  {isTogglingAvailability ? "..." : "switch"}
+                </span>
+              )}
+            </button>
 
             {/* Title */}
-            <h1 className={`${headingFont.className} text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-100 leading-tight w-full`}>
+            <h1
+              className={`${headingFont.className} text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-100 leading-tight w-full`}
+            >
               Hello, I&apos;m{" "}
               <span className="relative inline-block bg-gradient-to-r from-purple-300 via-purple-400 to-indigo-300 bg-clip-text text-transparent [text-shadow:0_0_25px_rgba(168,85,247,0.45)] break-words">
                 {name}
@@ -447,9 +606,16 @@ export default function Home() {
         </section>
 
         {/* Projects Section */}
-        <section id="projects" className="space-y-6 animate-fade-in opacity-0 delay-100">
+        <section
+          id="projects"
+          className="space-y-6 animate-fade-in opacity-0 delay-100"
+        >
           <div>
-            <h2 className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}>Featured Projects</h2>
+            <h2
+              className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
+            >
+              Featured Projects
+            </h2>
             <p className="text-neutral-400 text-xs sm:text-sm mt-1">
               A selection of projects and experiments I&apos;ve worked on.
             </p>
@@ -457,9 +623,13 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {isLoadingProjects ? (
-              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">Memuat proyek dari database...</p>
+              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
+                Memuat proyek dari database...
+              </p>
             ) : projects.length === 0 ? (
-              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">Belum ada proyek yang tersedia.</p>
+              <p className="text-neutral-500 text-xs sm:text-sm italic col-span-full">
+                Belum ada proyek yang tersedia.
+              </p>
             ) : (
               projects.map((project, index) => (
                 <div
@@ -486,7 +656,9 @@ export default function Home() {
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDeleteProject(project.id, project.title)}
+                        onClick={() =>
+                          handleDeleteProject(project.id, project.title)
+                        }
                         className="px-2.5 py-1 text-[11px] bg-red-950/80 border border-red-800/60 text-red-300 rounded hover:bg-red-900 transition"
                       >
                         Hapus
@@ -496,17 +668,31 @@ export default function Home() {
 
                   <div>
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className={`${headingFont.className} font-bold text-base sm:text-lg text-neutral-100 group-hover:text-white transition leading-snug`}>
+                      <h3
+                        className={`${headingFont.className} font-bold text-base sm:text-lg text-neutral-100 group-hover:text-white transition leading-snug`}
+                      >
                         {project.title}
                       </h3>
                       <div className="flex gap-2 shrink-0 pt-0.5">
                         {project.github && (
-                          <a href={project.github} target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-white transition p-1" aria-label="Github link">
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-neutral-400 hover:text-white transition p-1"
+                            aria-label="Github link"
+                          >
                             <CodeIcon className="w-4 h-4" />
                           </a>
                         )}
                         {project.link && (
-                          <a href={project.link} target="_blank" rel="noreferrer" className="text-neutral-400 hover:text-white transition p-1" aria-label="Demo link">
+                          <a
+                            href={project.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-neutral-400 hover:text-white transition p-1"
+                            aria-label="Demo link"
+                          >
                             <ExternalLinkIcon className="w-4 h-4" />
                           </a>
                         )}
@@ -534,10 +720,19 @@ export default function Home() {
         </section>
 
         {/* Skills Section */}
-        <section id="skills" className="space-y-6 animate-fade-in opacity-0 delay-200">
+        <section
+          id="skills"
+          className="space-y-6 animate-fade-in opacity-0 delay-200"
+        >
           <div>
-            <h2 className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}>Skills & Tech Stack</h2>
-            <p className="text-neutral-400 text-xs sm:text-sm mt-1">Technologies and tools I use regularly.</p>
+            <h2
+              className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
+            >
+              Skills & Tech Stack
+            </h2>
+            <p className="text-neutral-400 text-xs sm:text-sm mt-1">
+              Technologies and tools I use regularly.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-2.5">
             {skills.map((skill: string) => (
@@ -552,35 +747,99 @@ export default function Home() {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="dynamic-stroke relative py-8 sm:py-16 text-center space-y-4 sm:space-y-6 animate-fade-in opacity-0 delay-300">
-          <h2 className={`${headingFont.className} text-2xl sm:text-4xl font-bold tracking-tight`}>Let&apos;s Connect</h2>
+        <section
+          id="contact"
+          className="dynamic-stroke relative py-8 sm:py-16 text-center space-y-4 sm:space-y-6 animate-fade-in opacity-0 delay-300"
+        >
+          <h2
+            className={`${headingFont.className} text-2xl sm:text-4xl font-bold tracking-tight`}
+          >
+            Let&apos;s Connect
+          </h2>
           <p className="text-white/85 max-w-lg mx-auto text-xs sm:text-base leading-relaxed px-2">
-            Open to discussing potential collaborations, professional opportunities, or innovative project ideas.
+            Open to discussing potential collaborations, professional
+            opportunities, or innovative project ideas.
           </p>
-          
-          <form onSubmit={handleContactSubmit} className="max-w-md mx-auto mt-6 bg-neutral-900/30 p-4 sm:p-8 rounded-2xl border border-neutral-800/80 backdrop-blur-sm text-left space-y-3.5 sm:space-y-4 shadow-xl">
+
+          <form
+            onSubmit={handleContactSubmit}
+            className="max-w-md mx-auto mt-6 bg-neutral-900/30 p-4 sm:p-8 rounded-2xl border border-neutral-800/80 backdrop-blur-sm text-left space-y-3.5 sm:space-y-4 shadow-xl"
+          >
             <div>
-              <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1">Full Name</label>
-              <input type="text" id="name" name="name" required disabled={isSubmitting} className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50" placeholder="John Doe" />
+              <label
+                htmlFor="name"
+                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                disabled={isSubmitting}
+                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50"
+                placeholder="John Doe"
+              />
             </div>
             <div>
-              <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1">Email Address</label>
-              <input type="email" id="email" name="email" required disabled={isSubmitting} className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50" placeholder="john@example.com" />
+              <label
+                htmlFor="email"
+                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                disabled={isSubmitting}
+                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50"
+                placeholder="john@example.com"
+              />
             </div>
             <div>
-              <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1">Message</label>
-              <textarea id="message" name="message" required disabled={isSubmitting} rows={4} className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition resize-none disabled:opacity-50" placeholder="How can I help you?"></textarea>
+              <label
+                htmlFor="message"
+                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+              >
+                Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                disabled={isSubmitting}
+                rows={4}
+                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition resize-none disabled:opacity-50"
+                placeholder="How can I help you?"
+              ></textarea>
             </div>
-            
-            <button type="submit" disabled={isSubmitting} className="w-full inline-flex justify-center items-center gap-2 px-6 py-2.5 sm:py-3 mt-1 sm:mt-2 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-sm sm:text-base hover:bg-neutral-200 transition duration-200 shadow-lg shadow-purple-900/20 disabled:opacity-70 disabled:cursor-not-allowed">
-              {isSubmitting ? "Sending..." : <><MailIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Send Message</>}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full inline-flex justify-center items-center gap-2 px-6 py-2.5 sm:py-3 mt-1 sm:mt-2 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-sm sm:text-base hover:bg-neutral-200 transition duration-200 shadow-lg shadow-purple-900/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                "Sending..."
+              ) : (
+                <>
+                  <MailIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Send Message
+                </>
+              )}
             </button>
 
             {submitStatus === "success" && (
-              <p className="text-emerald-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">Message sent successfully! I&apos;ll get back to you soon.</p>
+              <p className="text-emerald-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
+                Message sent successfully! I&apos;ll get back to you soon.
+              </p>
             )}
             {submitStatus === "error" && (
-              <p className="text-red-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">{errorMessage}</p>
+              <p className="text-red-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
+                {errorMessage}
+              </p>
             )}
           </form>
         </section>
@@ -613,7 +872,9 @@ export default function Home() {
             </button>
 
             <div>
-              <h3 className={`${headingFont.className} text-lg sm:text-xl font-bold text-white tracking-tight`}>
+              <h3
+                className={`${headingFont.className} text-lg sm:text-xl font-bold text-white tracking-tight`}
+              >
                 Admin Portal
               </h3>
               <p className="text-neutral-400 text-xs mt-1">
@@ -629,7 +890,9 @@ export default function Home() {
 
             <form onSubmit={handleAdminLogin} className="space-y-3.5">
               <div>
-                <label className="block text-[11px] font-mono text-neutral-400 mb-1">EMAIL</label>
+                <label className="block text-[11px] font-mono text-neutral-400 mb-1">
+                  EMAIL
+                </label>
                 <input
                   type="email"
                   required
@@ -641,7 +904,9 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-neutral-400 mb-1">PASSWORD</label>
+                <label className="block text-[11px] font-mono text-neutral-400 mb-1">
+                  PASSWORD
+                </label>
                 <input
                   type="password"
                   required
@@ -669,8 +934,12 @@ export default function Home() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
           <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto p-5 sm:p-6 rounded-2xl bg-[#0f0f13] border border-neutral-800 shadow-2xl space-y-4 text-xs my-auto">
             <div className="flex justify-between items-center sticky top-0 bg-[#0f0f13] pb-2 z-10 border-b border-neutral-800/60">
-              <h3 className={`${headingFont.className} text-sm sm:text-base font-bold text-white tracking-tight`}>
-                {editingProject.id ? `Edit Proyek #${editingProject.id}` : "Tambah Proyek Baru"}
+              <h3
+                className={`${headingFont.className} text-sm sm:text-base font-bold text-white tracking-tight`}
+              >
+                {editingProject.id
+                  ? `Edit Proyek #${editingProject.id}`
+                  : "Tambah Proyek Baru"}
               </h3>
               <button
                 onClick={() => {
@@ -685,36 +954,57 @@ export default function Home() {
 
             <form onSubmit={handleSaveProject} className="space-y-3.5 pt-1">
               <div>
-                <label className="block font-mono text-neutral-400 mb-1">TITLE</label>
+                <label className="block font-mono text-neutral-400 mb-1">
+                  TITLE
+                </label>
                 <input
                   type="text"
                   required
                   value={editingProject.title}
-                  onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      title: e.target.value,
+                    })
+                  }
                   placeholder="Nama Proyek"
                   className="w-full px-3 py-2.5 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-purple-500 text-xs sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-neutral-400 mb-1">DESCRIPTION</label>
+                <label className="block font-mono text-neutral-400 mb-1">
+                  DESCRIPTION
+                </label>
                 <textarea
                   required
                   rows={3}
                   value={editingProject.description}
-                  onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      description: e.target.value,
+                    })
+                  }
                   placeholder="Deskripsi singkat proyek..."
                   className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-purple-500 resize-none text-xs sm:text-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-mono text-neutral-400 mb-1">TAGS (pisahkan dengan koma)</label>
+                <label className="block font-mono text-neutral-400 mb-1">
+                  TAGS (pisahkan dengan koma)
+                </label>
                 <input
                   type="text"
                   required
                   value={editingProject.tags}
-                  onChange={(e) => setEditingProject({ ...editingProject, tags: e.target.value })}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      tags: e.target.value,
+                    })
+                  }
                   placeholder="Next.js, TypeScript, Tailwind"
                   className="w-full px-3 py-2.5 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-purple-500 text-xs sm:text-sm"
                 />
@@ -722,21 +1012,35 @@ export default function Home() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-mono text-neutral-400 mb-1">GITHUB REPO (opsional)</label>
+                  <label className="block font-mono text-neutral-400 mb-1">
+                    GITHUB REPO (opsional)
+                  </label>
                   <input
                     type="url"
                     value={editingProject.github}
-                    onChange={(e) => setEditingProject({ ...editingProject, github: e.target.value })}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        github: e.target.value,
+                      })
+                    }
                     placeholder="https://github.com/..."
                     className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-mono text-neutral-400 mb-1">LIVE DEMO (opsional)</label>
+                  <label className="block font-mono text-neutral-400 mb-1">
+                    LIVE DEMO (opsional)
+                  </label>
                   <input
                     type="url"
                     value={editingProject.link}
-                    onChange={(e) => setEditingProject({ ...editingProject, link: e.target.value })}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        link: e.target.value,
+                      })
+                    }
                     placeholder="https://..."
                     className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-purple-500"
                   />
@@ -766,7 +1070,6 @@ export default function Home() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
