@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  // Ganti URL ini dengan URL domain Netlify kamu
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://your-site-name.netlify.app"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://muhammadyaumiladityawarman.netlify.app"
+  ),
   title: {
     default: "Muhammad Yaumil Aditya Warman | Portfolio",
     template: "%s | Aditya Warman",
@@ -42,3 +44,17 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className="bg-neutral-950 text-neutral-100 antialiased min-h-screen">
+        {children}
+      </body>
+    </html>
+  );
+}
