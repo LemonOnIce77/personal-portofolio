@@ -184,7 +184,6 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
 
   // --- FETCH DATA PROYEK ---
-  // Ambil status saat web dimuat
   const loadSiteSettings = useCallback(async () => {
     const { data } = await supabase
       .from("site_settings")
@@ -197,13 +196,11 @@ export default function Home() {
     }
   }, []);
 
-  // Jalankan fungsi load di useEffect
   useEffect(() => {
     loadSiteSettings();
   }, [loadSiteSettings]);
 
   const handleToggleAvailability = async () => {
-    // Cek apakah admin aktif
     if (!isAdmin) {
       alert(
         "Kamu belum login sebagai admin. Klik simbol © di footer untuk login.",
@@ -216,7 +213,6 @@ export default function Home() {
     const nextState = !isAvailable;
     setIsTogglingAvailability(true);
 
-    // Update ke database
     const { error } = await supabase
       .from("site_settings")
       .update({
@@ -239,7 +235,7 @@ export default function Home() {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .order("order_index", { ascending: true }); // Mengurutkan berdasarkan order_index
+      .order("order_index", { ascending: true });
 
     if (!error && data) {
       setProjects(
@@ -293,10 +289,8 @@ export default function Home() {
       order_index: idx + 1,
     }));
 
-    // 1. Update UI seketika tanpa jeda
     setProjects(updatedProjects);
 
-    // 2. Kirim update ke Supabase secara paralel di latar belakang
     try {
       await Promise.all(
         updatedProjects.map((proj) =>
@@ -311,7 +305,6 @@ export default function Home() {
     }
   };
 
-  // --- HANDLER LOGIN ADMIN ---
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsAdminLoggingIn(true);
@@ -334,13 +327,11 @@ export default function Home() {
     setAdminPassword("");
   };
 
-  // --- HANDLER LOGOUT ADMIN ---
   const handleAdminLogout = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
   };
 
-  // --- HANDLER HAPUS PROYEK ---
   const handleDeleteProject = async (id: number, title: string) => {
     if (!confirm(`Hapus proyek "${title}"?`)) return;
     const { error } = await supabase.from("projects").delete().eq("id", id);
@@ -351,7 +342,6 @@ export default function Home() {
     }
   };
 
-  // --- HANDLER SIMPAN (TAMBAH / UPDATE) PROYEK ---
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProject) return;
@@ -388,7 +378,6 @@ export default function Home() {
     setIsSavingProject(false);
   };
 
-  // --- HANDLER SUBMIT FORM KONTAK ---
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -436,7 +425,7 @@ export default function Home() {
         />
       </div>
 
-      {/* FLOATING ADMIN TOOLBAR (Responsive: di mobile melayang di bawah layar agar tidak menutupi navbar, di desktop di pojok kanan atas) */}
+      {/* FLOATING ADMIN TOOLBAR */}
       {isAdmin && (
         <aside
           aria-label="Admin Control Bar"
@@ -474,7 +463,6 @@ export default function Home() {
       {/* Header / Navbar */}
       <header className="sticky top-0 z-40 px-3 sm:px-4 pt-3 sm:pt-4 pb-2">
         <div className="liquid-glass max-w-6xl mx-auto h-14 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-between px-4 sm:px-8 border border-white/5 shadow-lg">
-          {/* Logo Personal Branding */}
           <Link
             href="/"
             className="hover:opacity-80 transition duration-200 flex items-center"
@@ -489,10 +477,9 @@ export default function Home() {
             />
           </Link>
 
-          {/* Navigasi */}
           <nav className="flex items-center gap-1 sm:gap-2 text-xs sm:text-base font-medium text-white">
             <Link
-              href="#about"
+              href="/about"
               className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200"
             >
               About
@@ -527,7 +514,6 @@ export default function Home() {
           className="pt-4 sm:pt-8 text-center flex flex-col items-center animate-fade-in opacity-0"
         >
           <div className="flex flex-col items-center gap-4 sm:gap-5 max-w-3xl">
-            {/* Foto Profil */}
             <div className="relative group mb-2 sm:mb-3">
               <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-400 to-indigo-500 opacity-75 blur-lg group-hover:opacity-100 transition duration-500 animate-pulse" />
 
@@ -543,7 +529,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Badge Status (Switchable khusus Admin) */}
             <button
               type="button"
               onClick={handleToggleAvailability}
@@ -576,7 +561,6 @@ export default function Home() {
               )}
             </button>
 
-            {/* Title */}
             <h1
               className={`${headingFont.className} text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-100 leading-tight w-full`}
             >
@@ -586,7 +570,6 @@ export default function Home() {
               </span>
             </h1>
 
-            {/* Role & Bio */}
             <div className="space-y-3 sm:space-y-4 max-w-2xl px-2">
               <p className="text-base sm:text-xl text-neutral-200 font-semibold tracking-wide leading-snug">
                 {role}
@@ -596,7 +579,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* CTA Buttons */}
             <div className="flex flex-row justify-center items-center gap-3 pt-2 w-full max-w-xs sm:max-w-none">
               <a
                 href="#projects"
@@ -614,7 +596,6 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Social Links */}
             <div className="flex gap-3 sm:gap-4 pt-3 sm:pt-4">
               <a
                 href={socials.github}
@@ -643,18 +624,19 @@ export default function Home() {
           id="projects"
           className="space-y-6 animate-fade-in opacity-0 delay-100"
         >
-          <div>
-            <h2
-              className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
-            >
-              Featured Projects
-            </h2>
-            <p className="text-neutral-400 text-xs sm:text-sm mt-1">
-              A selection of projects and experiments I&apos;ve worked on.
-            </p>
+          <div className="flex items-end justify-between">
+            <div>
+              <h2
+                className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
+              >
+                Featured Projects
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm mt-1">
+                A selection of projects and experiments I&apos;ve worked on.
+              </p>
+            </div>
           </div>
 
-          {/* Pastikan DragDropContext membungkus Droppable */}
           {isMounted && (
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="projects-list" isDropDisabled={!isAdmin}>
@@ -677,7 +659,8 @@ export default function Home() {
                         Belum ada proyek yang tersedia.
                       </p>
                     ) : (
-                      projects.map((project, index) => (
+                      // Dibatasi maksimal 4 item teratas
+                      projects.slice(0, 4).map((project, index) => (
                         <Draggable
                           key={project.id}
                           draggableId={String(project.id)}
@@ -734,7 +717,7 @@ export default function Home() {
                                       onClick={() =>
                                         handleDeleteProject(
                                           project.id,
-                                          project.title,
+                                          project.title
                                         )
                                       }
                                       className="px-2.5 py-1 text-[11px] bg-red-950/80 border border-red-800/60 text-red-300 rounded hover:bg-red-900 transition"
@@ -802,6 +785,21 @@ export default function Home() {
                 )}
               </Droppable>
             </DragDropContext>
+          )}
+
+          {/* Tombol Lihat Semua Proyek ke /projects */}
+          {projects.length > 4 && (
+            <div className="pt-2 flex justify-center sm:justify-start">
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:bg-neutral-900/60 hover:border-purple-500/50 text-neutral-300 hover:text-white text-xs sm:text-sm font-mono transition duration-200 group"
+              >
+                <span>Lihat Semua Proyek ({projects.length})</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  →
+                </span>
+              </Link>
+            </div>
           )}
         </section>
 
@@ -943,7 +941,7 @@ export default function Home() {
         2026 {name}. Built with Next.js & Tailwind CSS.
       </footer>
 
-      {/* Modal Login Admin (Responsive & Scroll-safe) */}
+      {/* Modal Login Admin */}
       {isAdminModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
           <div className="relative w-full max-w-sm p-6 sm:p-8 rounded-2xl bg-[#0e0e12] border border-neutral-800 shadow-2xl space-y-4 my-auto">
@@ -1015,7 +1013,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal Tambah / Edit Proyek (Responsive & Max-Height Scrollable untuk Layar HP) */}
+      {/* Modal Tambah / Edit Proyek */}
       {isProjectModalOpen && editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in overflow-y-auto">
           <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto p-5 sm:p-6 rounded-2xl bg-[#0f0f13] border border-neutral-800 shadow-2xl space-y-4 text-xs my-auto">
