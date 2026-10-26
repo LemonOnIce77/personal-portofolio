@@ -41,7 +41,6 @@ const portfolioData = {
   socials: {
     github: "https://github.com/LemonOnIce77",
     linkedin: "https://www.linkedin.com/in/muhammad-yaumil-aditya-warman/",
-    email: "mailto:adityawarman.emil@gmail.com",
   },
   skills: [
     "Next.js",
@@ -545,35 +544,37 @@ export default function Home() {
             </div>
 
             {/* Badge Status (Switchable khusus Admin) */}
-<button
-  type="button"
-  onClick={handleToggleAvailability}
-  disabled={!isAdmin || isTogglingAvailability}
-  title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
-  className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
-    isAvailable
-      ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
-      : "bg-sky-950/30 border-sky-500/40 text-sky-200"
-  } ${
-    isAdmin
-      ? "cursor-pointer hover:border-sky-400 hover:scale-105 active:scale-95 ring-1 ring-sky-500/30"
-      : "cursor-default"
-  }`}
->
-  <span
-    className={`w-2 h-2 rounded-full shrink-0 ${
-      isAvailable ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
-    }`}
-  />
-  <span>
-    {isAvailable ? "Available for collaborations" : "Currently focused on ongoing projects"}
-  </span>
-  {isAdmin && (
-    <span className="text-[9px] px-1 py-0.2 rounded bg-sky-900/60 text-sky-200 ml-1">
-      {isTogglingAvailability ? "..." : "switch"}
-    </span>
-  )}
-</button>
+            <button
+              type="button"
+              onClick={handleToggleAvailability}
+              disabled={!isAdmin || isTogglingAvailability}
+              title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
+                isAvailable
+                  ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
+                  : "bg-sky-950/30 border-sky-500/40 text-sky-200"
+              } ${
+                isAdmin
+                  ? "cursor-pointer hover:border-sky-400 hover:scale-105 active:scale-95 ring-1 ring-sky-500/30"
+                  : "cursor-default"
+              }`}
+            >
+              <span
+                className={`w-2 h-2 rounded-full shrink-0 ${
+                  isAvailable ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
+                }`}
+              />
+              <span>
+                {isAvailable
+                  ? "Available for collaborations"
+                  : "Currently focused on ongoing projects"}
+              </span>
+              {isAdmin && (
+                <span className="text-[9px] px-1 py-0.2 rounded bg-sky-900/60 text-sky-200 ml-1">
+                  {isTogglingAvailability ? "..." : "switch"}
+                </span>
+              )}
+            </button>
 
             {/* Title */}
             <h1
@@ -632,13 +633,6 @@ export default function Home() {
                 aria-label="LinkedIn"
               >
                 <LinkedinIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-              </a>
-              <a
-                href={socials.email}
-                className="p-2 sm:p-2.5 rounded-lg border border-neutral-800 bg-neutral-900/80 text-neutral-300 hover:text-white hover:border-neutral-600 transition duration-200"
-                aria-label="Email"
-              >
-                <MailIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             </div>
           </div>

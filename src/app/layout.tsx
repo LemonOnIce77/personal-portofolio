@@ -47,11 +47,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className="bg-neutral-950 text-neutral-100 antialiased min-h-screen">
         {children}
       </body>
