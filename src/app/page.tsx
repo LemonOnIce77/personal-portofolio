@@ -37,7 +37,7 @@ interface Project {
 const portfolioData = {
   name: "Muhammad Yaumil Aditya Warman",
   role: "Undergraduate Information Systems Student & Business Tech Enthusiast",
-  bio: "An Information Systems student passionate about the intersection of business, product, and technology. Driven by curiosity and a continuous desire to learn, I’m constantly exploring how technology can be leveraged to solve real-world problems, create meaningful digital products, and deliver practical value. I strive to continuously develop my skills, broaden my perspective, and grow into a professional who bridges business needs with technological possibilities.",
+  bio: "An Information Systems student passionate about the intersection of business, product, and technology. Driven to continuously learn and explore how technology can solve real-world problems, create meaningful digital products, and deliver business value.",
   socials: {
     github: "https://github.com/LemonOnIce77",
     linkedin: "https://www.linkedin.com/in/muhammad-yaumil-aditya-warman/",
