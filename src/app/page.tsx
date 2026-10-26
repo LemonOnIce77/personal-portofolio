@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "../lib/supabase";
 import { submitContactForm } from "./actions";
 import { useRouter } from "next/navigation";
+import { projectsData, ProjectItem } from "@/data/projects";
 import {
   DragDropContext,
   Droppable,
@@ -24,7 +25,7 @@ const bodyFont = Inter({
   weight: ["400", "500"],
 });
 
-interface Project {
+interface EditableProject {
   id: number;
   title: string;
   description: string;
@@ -152,7 +153,7 @@ export default function Home() {
 
   // --- STATE DATA & ADMIN ---
   const [isAdmin, setIsAdmin] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<EditableProject[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
   const [isTogglingAvailability, setIsTogglingAvailability] = useState(false);
@@ -183,7 +184,7 @@ export default function Home() {
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // --- FETCH DATA PROYEK ---
+  // --- FETCH DATA SETTINGS & PROYEK ---
   const loadSiteSettings = useCallback(async () => {
     const { data } = await supabase
       .from("site_settings")
@@ -202,9 +203,7 @@ export default function Home() {
 
   const handleToggleAvailability = async () => {
     if (!isAdmin) {
-      alert(
-        "Kamu belum login sebagai admin. Klik simbol © di footer untuk login.",
-      );
+      alert("Kamu belum login sebagai admin. Klik simbol © di footer untuk login.");
       return;
     }
 
@@ -237,7 +236,7 @@ export default function Home() {
       .select("*")
       .order("order_index", { ascending: true });
 
-    if (!error && data) {
+    if (!error && data && data.length > 0) {
       setProjects(
         data.map((project, idx) => ({
           id: project.id,
@@ -247,8 +246,20 @@ export default function Home() {
           link: project.link ?? null,
           github: project.github ?? null,
           order_index: project.order_index ?? idx,
-        })),
+        }))
       );
+    } else {
+      // Fallback ke data terpusat jika data database belum terisi
+      const fallbackList: EditableProject[] = projectsData.map((item, idx) => ({
+        id: idx + 1,
+        title: item.title,
+        description: item.solution,
+        tags: item.techStack,
+        github: item.githubUrl ?? null,
+        link: item.liveUrl ?? null,
+        order_index: item.order,
+      }));
+      setProjects(fallbackList);
     }
     setIsLoadingProjects(false);
   }, []);
@@ -268,7 +279,7 @@ export default function Home() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setIsAdmin(!!session);
-      },
+      }
     );
 
     return () => {
@@ -297,8 +308,8 @@ export default function Home() {
           supabase
             .from("projects")
             .update({ order_index: proj.order_index })
-            .eq("id", proj.id),
-        ),
+            .eq("id", proj.id)
+        )
       );
     } catch (err) {
       console.error("Gagal menyimpan urutan:", err);
@@ -363,10 +374,7 @@ export default function Home() {
 
     const res = isNew
       ? await supabase.from("projects").insert([payload])
-      : await supabase
-          .from("projects")
-          .update(payload)
-          .eq("id", editingProject.id);
+      : await supabase.from("projects").update(payload).eq("id", editingProject.id);
 
     if (!res.error) {
       setIsProjectModalOpen(false);
@@ -485,7 +493,7 @@ export default function Home() {
               About
             </Link>
             <Link
-              href="#projects"
+              href="/projects"
               className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-white/[0.15] transition duration-200"
             >
               Projects
@@ -619,22 +627,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Projects Section */}
+        {/* Featured Projects Section dengan Direct Header CTA */}
         <section
           id="projects"
           className="space-y-6 animate-fade-in opacity-0 delay-100"
         >
-          <div className="flex items-end justify-between">
+          {/* Header Section: Judul di Kiri & CTA Direct di Kanan */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-800/60 pb-4">
             <div>
               <h2
-                className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
+                className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight text-white`}
               >
                 Featured Projects
               </h2>
               <p className="text-neutral-400 text-xs sm:text-sm mt-1">
-                A selection of projects and experiments I&apos;ve worked on.
+                A selection of high-impact systems and engineering works I&apos;ve built.
               </p>
             </div>
+
+            {/* Direct CTA Link ke Halaman /projects */}
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono text-purple-300 hover:text-purple-200 transition duration-200 group self-start sm:self-auto py-1"
+            >
+              <span>View All Projects</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">
+                →
+              </span>
+            </Link>
           </div>
 
           {isMounted && (
@@ -659,7 +679,7 @@ export default function Home() {
                         Belum ada proyek yang tersedia.
                       </p>
                     ) : (
-                      // Dibatasi maksimal 4 item teratas
+                      // Hanya menampilkan 4 proyek unggulan di Homepage
                       projects.slice(0, 4).map((project, index) => (
                         <Draggable
                           key={project.id}
@@ -681,7 +701,7 @@ export default function Home() {
                                   : "border-neutral-800/80 hover:border-purple-500/50 hover:bg-neutral-900/60 transition-[border-color,background-color] duration-200"
                               }`}
                             >
-                              {/* Action Bar Admin + Handle Drag */}
+                              {/* Action Bar Admin */}
                               {isAdmin && (
                                 <div className="flex sm:absolute sm:top-4 sm:right-4 z-20 items-center gap-1.5 mb-3 sm:mb-0 justify-between sm:justify-end">
                                   <span
@@ -760,7 +780,7 @@ export default function Home() {
                                     )}
                                   </div>
                                 </div>
-                                <p className="text-neutral-400 text-xs sm:text-sm mt-2.5 leading-relaxed">
+                                <p className="text-neutral-400 text-xs sm:text-sm mt-2.5 leading-relaxed line-clamp-3">
                                   {project.description}
                                 </p>
                               </div>
@@ -787,20 +807,18 @@ export default function Home() {
             </DragDropContext>
           )}
 
-          {/* Tombol Lihat Semua Proyek ke /projects */}
-          {projects.length > 4 && (
-            <div className="pt-2 flex justify-center sm:justify-start">
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:bg-neutral-900/60 hover:border-purple-500/50 text-neutral-300 hover:text-white text-xs sm:text-sm font-mono transition duration-200 group"
-              >
-                <span>Lihat Semua Proyek ({projects.length})</span>
-                <span className="group-hover:translate-x-1 transition-transform duration-200">
-                  →
-                </span>
-              </Link>
-            </div>
-          )}
+          {/* Footer Card Navigation Link */}
+          <div className="pt-2 flex justify-center sm:justify-start">
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:bg-neutral-900/60 hover:border-purple-500/50 text-neutral-300 hover:text-white text-xs sm:text-sm font-mono transition duration-200 group"
+            >
+              <span>Explore All Projects Archive ({projects.length})</span>
+              <span className="group-hover:translate-x-1 transition-transform duration-200">
+                →
+              </span>
+            </Link>
+          </div>
         </section>
 
         {/* Skills Section */}
