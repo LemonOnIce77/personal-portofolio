@@ -2,13 +2,56 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #070709;
 }
 
 body {
-  background-color: #0a0a0a;
+  background-color: #070709;
   color: #f5f5f5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* Animasi Fade In Lembut Saat Halaman Terbuka */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Drawer slide from left to right */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-left {
+  animation: slideInFromLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hide scrollbar for drawer track */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Otomatis terapkan ke semua container halaman utama */
+main {
+  animation: pageEnter 2.2s cubic-bezier(0.22, 0.6, 0.36, 1) forwards;
+  will-change: opacity;
 }
 
 ::selection {
@@ -33,6 +76,7 @@ body {
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -43,16 +87,27 @@ body {
   animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
 
 /* Animasi Gradient Ambient */
 @keyframes pulseGradient {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
     opacity: 0.35;
   }
+
   50% {
     transform: translate(30px, -20px) scale(1.15);
     opacity: 0.55;
@@ -60,10 +115,13 @@ body {
 }
 
 @keyframes driftGradient {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
     opacity: 0.25;
   }
+
   50% {
     transform: translate(-30px, 20px) scale(1.1);
     opacity: 0.45;
@@ -123,15 +181,21 @@ body {
 }
 
 @keyframes orb-purple-drift {
-  to { transform: translate(18vw, 14vh) scale(1.18); }
+  to {
+    transform: translate(18vw, 14vh) scale(1.18);
+  }
 }
 
 @keyframes orb-red-drift {
-  to { transform: translate(-16vw, 18vh) scale(1.22); }
+  to {
+    transform: translate(-16vw, 18vh) scale(1.22);
+  }
 }
 
 @keyframes orb-orange-drift {
-  to { transform: translate(12vw, -18vh) scale(1.16); }
+  to {
+    transform: translate(12vw, -18vh) scale(1.16);
+  }
 }
 
 .dynamic-stroke::before {
@@ -148,20 +212,38 @@ body {
 }
 
 @keyframes contact-stroke-shift {
-  from { background-position: 0% 50%; }
-  to { background-position: 200% 50%; }
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 200% 50%;
+  }
 }
 
 @keyframes aurora-shift {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 35%; }
-  100% { background-position: 20% 100%; }
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 35%;
+  }
+
+  100% {
+    background-position: 20% 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .background-aurora,
   .aurora-orb,
-  .dynamic-stroke::before {
-    animation: none;
+  .dynamic-stroke::before,
+  .animate-page-enter,
+  .animate-fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { submitContactForm } from "./actions";
 import { useRouter } from "next/navigation";
@@ -143,6 +143,173 @@ function CodeIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
+function EyeIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
+function GripIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="9" cy="5" r="1" />
+      <circle cx="9" cy="12" r="1" />
+      <circle cx="9" cy="19" r="1" />
+      <circle cx="15" cy="5" r="1" />
+      <circle cx="15" cy="12" r="1" />
+      <circle cx="15" cy="19" r="1" />
+    </svg>
+  );
+}
+
+function ProjectImagePlaceholder({
+  title,
+  tags = [],
+  index = 0,
+  className = "",
+  onClick,
+  showHoverPrompt = true,
+}: {
+  title: string;
+  tags?: string[];
+  index?: number;
+  className?: string;
+  onClick?: () => void;
+  showHoverPrompt?: boolean;
+}) {
+  const gradients = [
+    "from-purple-900/50 via-indigo-950/70 to-neutral-950",
+    "from-violet-900/50 via-fuchsia-950/70 to-neutral-950",
+    "from-blue-900/50 via-purple-950/70 to-neutral-950",
+    "from-emerald-950/50 via-indigo-950/70 to-neutral-950",
+  ];
+  const accents = ["#a855f7", "#ec4899", "#3b82f6", "#10b981"];
+  const gradient = gradients[index % gradients.length];
+  const accent = accents[index % accents.length];
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "-")
+    .replace(/-+/g, "-");
+
+  return (
+    <div
+      onClick={onClick}
+      className={`relative w-full aspect-video rounded-xl overflow-hidden border border-neutral-800/80 bg-gradient-to-br ${gradient} group/placeholder select-none transition-all duration-300 hover:border-purple-500/50 ${
+        onClick ? "cursor-pointer" : ""
+      } ${className}`}
+    >
+      {/* Chrome Window Top Bar */}
+      <div className="absolute top-0 inset-x-0 h-6 bg-neutral-950/85 backdrop-blur-md border-b border-neutral-800/80 flex items-center justify-between px-2.5 z-10">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-rose-500/80" />
+          <span className="w-2 h-2 rounded-full bg-amber-500/80" />
+          <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
+        </div>
+        <div className="text-[9px] font-mono text-neutral-400 truncate max-w-[150px] px-2 py-0.5 rounded bg-neutral-900/90 border border-neutral-800">
+          preview://{slug || "project"}.dev
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+          <span className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+        </div>
+      </div>
+
+      {/* Grid Pattern Background */}
+      <div
+        className="absolute inset-0 pt-6 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px)",
+          backgroundSize: "16px 16px",
+        }}
+      />
+
+      {/* Center Mockup Content */}
+      <div className="absolute inset-0 pt-6 flex flex-col items-center justify-center p-4 text-center">
+        <div
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-2 shadow-xl transition-transform duration-300 group-hover/placeholder:scale-110"
+          style={{
+            background: `radial-gradient(circle at 30% 30%, ${accent}33, #0a0a0f)`,
+            border: `1px solid ${accent}55`,
+          }}
+        >
+          <CodeIcon className="w-5 h-5 text-purple-300" />
+        </div>
+        <span className="text-xs sm:text-sm font-semibold text-neutral-100 truncate max-w-[90%] drop-shadow">
+          {title}
+        </span>
+        {tags && tags.length > 0 && (
+          <div className="flex items-center gap-1 mt-1 text-[10px] font-mono text-neutral-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400/80" />
+            <span>{tags.slice(0, 2).join(" • ")}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Hover Overlay with "View Overview" Prompt */}
+      {showHoverPrompt && (
+        <div className="absolute inset-0 bg-neutral-950/75 backdrop-blur-[2px] opacity-0 group-hover/placeholder:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-20">
+          <span className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium shadow-lg shadow-purple-600/30 flex items-center gap-1.5 transition">
+            <EyeIcon className="w-3.5 h-3.5" />
+            <span>Quick Overview</span>
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const { name, role, bio, socials, skills } = portfolioData;
   const router = useRouter();
@@ -183,6 +350,122 @@ export default function Home() {
     "idle" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // --- SCROLL-DRIVEN TRANSITION & LEFT-TO-RIGHT DRAWER ---
+  const projectsSectionRef = useRef<HTMLElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const drawerTrackRef = useRef<HTMLDivElement>(null);
+  const [drawerProject, setDrawerProject] = useState<EditableProject | null>(null);
+
+  // Scroll listener tracking proximity to Featured Projects section
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          if (projectsSectionRef.current) {
+            const rect = projectsSectionRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            // start: section top enters bottom of window (progress = 0)
+            // end: section top is ~20% from viewport top (progress = 1)
+            const start = windowHeight;
+            const end = windowHeight * 0.2;
+            const rawProgress = (start - rect.top) / (start - end);
+            const clamped = Math.min(Math.max(rawProgress, 0), 1);
+            setScrollProgress(clamped);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Keyboard navigation for Left-to-Right Drawer (Escape to close)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDrawerProject(null);
+      }
+    };
+    if (drawerProject) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [drawerProject]);
+
+  // --- AUTO-SLIDE RIGHT TO LEFT EVERY 5 SECONDS ---
+  const [isProjectsInView, setIsProjectsInView] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Detect when user is viewing Featured Projects
+  useEffect(() => {
+    if (!projectsSectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsProjectsInView(entry.isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(projectsSectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Automatically slide from right to left every 5 seconds
+  useEffect(() => {
+    if (!isProjectsInView || drawerProject || isHovered) return;
+
+    const interval = setInterval(() => {
+      if (drawerTrackRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = drawerTrackRef.current;
+        const scrollAmount = 370;
+
+        // If reaching or near the end, loop back smoothly to the beginning
+        if (scrollLeft + clientWidth >= scrollWidth - 30) {
+          drawerTrackRef.current.scrollTo({
+            left: 0,
+            behavior: "smooth",
+          });
+        } else {
+          drawerTrackRef.current.scrollBy({
+            left: scrollAmount,
+            behavior: "smooth",
+          });
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isProjectsInView, drawerProject, isHovered]);
+
+  const handleScrollTrack = (direction: "left" | "right") => {
+    if (drawerTrackRef.current) {
+      const scrollAmount = 360;
+      drawerTrackRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleDrawerNavigate = (direction: "prev" | "next") => {
+    if (!drawerProject || projects.length === 0) return;
+    const currentIndex = projects.findIndex((p) => p.id === drawerProject.id);
+    if (currentIndex === -1) return;
+    if (direction === "next") {
+      const nextIndex = (currentIndex + 1) % projects.length;
+      setDrawerProject(projects[nextIndex]);
+    } else {
+      const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+      setDrawerProject(projects[prevIndex]);
+    }
+  };
 
   // --- FETCH DATA SETTINGS & PROYEK ---
   const loadSiteSettings = useCallback(async () => {
@@ -519,7 +802,7 @@ export default function Home() {
         {/* Hero Section */}
         <section
           id="about"
-          className="pt-4 sm:pt-8 text-center flex flex-col items-center animate-fade-in opacity-0"
+          className="pt-4 sm:pt-8 text-center flex flex-col items-center animate-fade-in"
         >
           <div className="flex flex-col items-center gap-4 sm:gap-5 max-w-3xl">
             <div className="relative group mb-2 sm:mb-3">
@@ -542,20 +825,17 @@ export default function Home() {
               onClick={handleToggleAvailability}
               disabled={!isAdmin || isTogglingAvailability}
               title={isAdmin ? "Klik untuk ganti status (Admin)" : ""}
-              className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${
-                isAvailable
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 text-[11px] sm:text-xs font-mono rounded-full border transition duration-200 select-none ${isAvailable
                   ? "bg-emerald-950/30 border-emerald-800/50 text-emerald-300"
                   : "bg-sky-950/30 border-sky-500/40 text-sky-200"
-              } ${
-                isAdmin
+                } ${isAdmin
                   ? "cursor-pointer hover:border-sky-400 hover:scale-105 active:scale-95 ring-1 ring-sky-500/30"
                   : "cursor-default"
-              }`}
+                }`}
             >
               <span
-                className={`w-2 h-2 rounded-full shrink-0 ${
-                  isAvailable ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
-                }`}
+                className={`w-2 h-2 rounded-full shrink-0 ${isAvailable ? "bg-emerald-400 animate-pulse" : "bg-sky-400"
+                  }`}
               />
               <span>
                 {isAvailable
@@ -627,14 +907,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Projects Section dengan Direct Header CTA */}
+        {/* Featured Projects Section dengan Scroll Transition & Left-to-Right Drawer */}
         <section
           id="projects"
-          className="space-y-6 animate-fade-in opacity-0 delay-100"
+          ref={projectsSectionRef}
+          style={{
+            transform: `translateX(${(1 - scrollProgress) * -45}px)`,
+            opacity: Math.max(0.3, scrollProgress),
+            transition: "transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease-out",
+          }}
+          className="space-y-6"
         >
-          {/* Header Section: Judul di Kiri & CTA Direct di Kanan */}
+          {/* Header Section: Judul, Subtitle, Direct CTA, & Horizontal Track Controls */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-800/60 pb-4">
             <div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 text-[11px] font-mono rounded-full border border-purple-500/30 bg-purple-950/20 text-purple-300 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                <span>Interactive Showcase • Auto-slide 5s</span>
+              </div>
               <h2
                 className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight text-white`}
               >
@@ -645,26 +935,61 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Direct CTA Link ke Halaman /projects */}
-            <Link
-              href="/projects"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono text-purple-300 hover:text-purple-200 transition duration-200 group self-start sm:self-auto py-1"
-            >
-              <span>View All Projects</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">
-                →
-              </span>
-            </Link>
+            <div className="flex items-center gap-3 self-start sm:self-auto">
+              {/* Horizontal Scroll Controls */}
+              <div className="flex items-center gap-1.5 bg-neutral-900/60 border border-neutral-800 rounded-xl p-1">
+                <button
+                  type="button"
+                  onClick={() => handleScrollTrack("left")}
+                  className="p-1.5 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-white transition"
+                  title="Scroll Left"
+                  aria-label="Scroll Projects Left"
+                >
+                  <ChevronLeftIcon className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleScrollTrack("right")}
+                  className="p-1.5 rounded-lg hover:bg-neutral-800 text-neutral-400 hover:text-white transition"
+                  title="Scroll Right"
+                  aria-label="Scroll Projects Right"
+                >
+                  <ChevronRightIcon className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Direct CTA Link ke Halaman /projects */}
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-mono text-purple-300 hover:text-purple-200 transition duration-200 group py-1"
+              >
+                <span>View All</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  →
+                </span>
+              </Link>
+            </div>
           </div>
 
           {isMounted && (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="projects-list" isDropDisabled={!isAdmin}>
+              <Droppable
+                droppableId="projects-list"
+                direction="horizontal"
+                isDropDisabled={!isAdmin}
+              >
                 {(provided, snapshot) => (
                   <div
-                    ref={provided.innerRef}
+                    ref={(el) => {
+                      provided.innerRef(el);
+                      drawerTrackRef.current = el;
+                    }}
                     {...provided.droppableProps}
-                    className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-colors duration-200 rounded-2xl p-1 ${
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    onTouchStart={() => setIsHovered(true)}
+                    onTouchEnd={() => setIsHovered(false)}
+                    className={`flex gap-4 overflow-x-auto snap-x scroll-smooth pb-4 pt-1 px-1 no-scrollbar rounded-2xl ${
                       snapshot.isDraggingOver
                         ? "bg-purple-950/10 ring-1 ring-purple-500/20"
                         : ""
@@ -679,8 +1004,8 @@ export default function Home() {
                         Belum ada proyek yang tersedia.
                       </p>
                     ) : (
-                      // Hanya menampilkan 4 proyek unggulan di Homepage
-                      projects.slice(0, 4).map((project, index) => (
+                      // Menampilkan proyek unggulan di Horizontal Drawer Track
+                      projects.slice(0, 6).map((project, index) => (
                         <Draggable
                           key={project.id}
                           draggableId={String(project.id)}
@@ -691,25 +1016,22 @@ export default function Home() {
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              style={{
-                                ...provided.draggableProps.style,
-                                willChange: "transform",
-                              }}
-                              className={`relative p-5 sm:p-6 rounded-xl border bg-neutral-900/30 flex flex-col justify-between group shadow-sm backdrop-blur-sm ${
+                              style={provided.draggableProps.style}
+                              className={`w-[290px] sm:w-[350px] shrink-0 snap-start p-4 sm:p-5 rounded-2xl border bg-neutral-900/30 flex flex-col justify-between group shadow-sm backdrop-blur-sm relative transition-all duration-200 ${
                                 snapshot.isDragging
-                                  ? "border-purple-500 bg-neutral-900/95 shadow-2xl scale-[1.03] z-50 ring-2 ring-purple-500/60 !transition-none cursor-grabbing"
-                                  : "border-neutral-800/80 hover:border-purple-500/50 hover:bg-neutral-900/60 transition-[border-color,background-color] duration-200"
+                                  ? "border-purple-500 bg-neutral-900/95 shadow-2xl z-50 ring-2 ring-purple-500/60 cursor-grabbing"
+                                  : "border-neutral-800/80 hover:border-purple-500/50 hover:bg-neutral-900/60"
                               }`}
                             >
                               {/* Action Bar Admin */}
                               {isAdmin && (
-                                <div className="flex sm:absolute sm:top-4 sm:right-4 z-20 items-center gap-1.5 mb-3 sm:mb-0 justify-between sm:justify-end">
+                                <div className="flex sm:absolute sm:top-4 sm:right-4 z-30 items-center gap-1.5 mb-2 sm:mb-0 justify-between sm:justify-end">
                                   <span
                                     {...provided.dragHandleProps}
                                     title="Tahan & geser untuk atur posisi"
-                                    className="cursor-grab active:cursor-grabbing p-1 text-neutral-400 hover:text-purple-300 transition select-none flex items-center gap-1 text-[11px] font-mono bg-neutral-950/60 px-2 py-0.5 rounded border border-neutral-800"
+                                    className="cursor-grab active:cursor-grabbing p-1 text-neutral-400 hover:text-purple-300 transition select-none flex items-center gap-1 text-[11px] font-mono bg-neutral-950/80 px-2 py-0.5 rounded border border-neutral-800"
                                   >
-                                    ⠿ Geser
+                                    <GripIcon className="w-3 h-3" /> Geser
                                   </span>
 
                                   <div className="flex items-center gap-1.5">
@@ -748,21 +1070,63 @@ export default function Home() {
                                 </div>
                               )}
 
-                              <div>
-                                <div className="flex items-start justify-between gap-3">
-                                  <h3
-                                    className={`${headingFont.className} font-bold text-base sm:text-lg text-neutral-100 group-hover:text-white transition leading-snug`}
+                              <div className="space-y-3.5">
+                                {/* Image Placeholder with Click to Open Drawer */}
+                                <ProjectImagePlaceholder
+                                  title={project.title}
+                                  tags={project.tags}
+                                  index={index}
+                                  onClick={() => setDrawerProject(project)}
+                                />
+
+                                <div>
+                                  <div className="flex items-start justify-between gap-3">
+                                    <h3
+                                      onClick={() => setDrawerProject(project)}
+                                      className={`${headingFont.className} font-bold text-base text-neutral-100 group-hover:text-purple-300 transition leading-snug cursor-pointer line-clamp-1`}
+                                    >
+                                      {project.title}
+                                    </h3>
+                                  </div>
+                                  <p className="text-neutral-400 text-xs mt-1.5 leading-relaxed line-clamp-2">
+                                    {project.description}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="pt-3 border-t border-neutral-800/60 mt-3 space-y-3">
+                                {/* Tags */}
+                                <div className="flex flex-wrap gap-1.5">
+                                  {project.tags.slice(0, 3).map((tag: string) => (
+                                    <span
+                                      key={tag}
+                                      className="text-[10px] px-2 py-0.5 rounded-md bg-neutral-800/60 text-neutral-300 border border-neutral-800 font-mono"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+
+                                {/* Actions: Overview Button + External Links */}
+                                <div className="flex items-center justify-between gap-2 pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => setDrawerProject(project)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-mono transition"
                                   >
-                                    {project.title}
-                                  </h3>
-                                  <div className="flex gap-2 shrink-0 pt-0.5">
+                                    <EyeIcon className="w-3.5 h-3.5" />
+                                    <span>Overview</span>
+                                  </button>
+
+                                  <div className="flex items-center gap-1">
                                     {project.github && (
                                       <a
                                         href={project.github}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-neutral-400 hover:text-white transition p-1"
+                                        className="text-neutral-400 hover:text-white transition p-1.5 rounded-lg hover:bg-neutral-800"
                                         aria-label="Github link"
+                                        title="Source Code"
                                       >
                                         <CodeIcon className="w-4 h-4" />
                                       </a>
@@ -772,28 +1136,15 @@ export default function Home() {
                                         href={project.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-neutral-400 hover:text-white transition p-1"
+                                        className="text-neutral-400 hover:text-white transition p-1.5 rounded-lg hover:bg-neutral-800"
                                         aria-label="Demo link"
+                                        title="Live Preview"
                                       >
                                         <ExternalLinkIcon className="w-4 h-4" />
                                       </a>
                                     )}
                                   </div>
                                 </div>
-                                <p className="text-neutral-400 text-xs sm:text-sm mt-2.5 leading-relaxed line-clamp-3">
-                                  {project.description}
-                                </p>
-                              </div>
-
-                              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 sm:mt-6">
-                                {project.tags.map((tag: string) => (
-                                  <span
-                                    key={tag}
-                                    className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-neutral-800/60 text-neutral-300 border border-neutral-800 font-mono"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
                               </div>
                             </div>
                           )}
@@ -808,10 +1159,13 @@ export default function Home() {
           )}
 
           {/* Footer Card Navigation Link */}
-          <div className="pt-2 flex justify-center sm:justify-start">
+          <div className="pt-2 flex justify-between items-center text-xs font-mono text-neutral-400">
+            <span className="hidden sm:inline">
+              ← Geser atau gunakan tombol panah untuk menjelajah →
+            </span>
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:bg-neutral-900/60 hover:border-purple-500/50 text-neutral-300 hover:text-white text-xs sm:text-sm font-mono transition duration-200 group"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800/80 bg-neutral-900/30 hover:bg-neutral-900/60 hover:border-purple-500/50 text-neutral-300 hover:text-white transition duration-200 group"
             >
               <span>Explore All Projects Archive ({projects.length})</span>
               <span className="group-hover:translate-x-1 transition-transform duration-200">
@@ -958,6 +1312,184 @@ export default function Home() {
         </span>{" "}
         2026 {name}. Built with Next.js & Tailwind CSS.
       </footer>
+
+      {/* ====== LEFT-TO-RIGHT PROJECT OVERVIEW DRAWER ====== */}
+      {drawerProject && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* Backdrop */}
+          <div
+            onClick={() => setDrawerProject(null)}
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity animate-fade-in"
+          />
+
+          {/* Slide-over Drawer Panel from Left to Right */}
+          <aside
+            aria-label="Project Overview Drawer"
+            className="fixed inset-y-0 left-0 w-full max-w-md sm:max-w-xl bg-[#0c0c10] border-r border-neutral-800 shadow-2xl flex flex-col z-50 animate-slide-left overflow-y-auto"
+          >
+            {/* Drawer Sticky Top Header */}
+            <div className="sticky top-0 bg-[#0c0c10]/95 backdrop-blur-md z-20 border-b border-neutral-800/80 px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                <span className="text-xs font-mono text-purple-300 uppercase tracking-wider font-semibold">
+                  Project Overview
+                </span>
+                {drawerProject.order_index && (
+                  <span className="text-[10px] font-mono text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-800">
+                    #{drawerProject.order_index}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Prev & Next inside Drawer */}
+                <div className="flex items-center gap-1 border border-neutral-800 rounded-lg p-0.5 bg-neutral-900/60">
+                  <button
+                    type="button"
+                    onClick={() => handleDrawerNavigate("prev")}
+                    className="p-1.5 text-neutral-400 hover:text-white rounded-md hover:bg-neutral-800 transition"
+                    title="Previous Project (←)"
+                    aria-label="Previous Project"
+                  >
+                    <ChevronLeftIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDrawerNavigate("next")}
+                    className="p-1.5 text-neutral-400 hover:text-white rounded-md hover:bg-neutral-800 transition"
+                    title="Next Project (→)"
+                    aria-label="Next Project"
+                  >
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setDrawerProject(null)}
+                  className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800 transition"
+                  title="Close Drawer (Esc)"
+                  aria-label="Close Overview Drawer"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Drawer Body Content */}
+            <div className="p-5 sm:p-6 space-y-6 flex-1">
+              {/* Large Image Placeholder */}
+              <div className="space-y-2">
+                <ProjectImagePlaceholder
+                  title={drawerProject.title}
+                  tags={drawerProject.tags}
+                  index={drawerProject.id}
+                  showHoverPrompt={false}
+                  className="shadow-2xl ring-1 ring-purple-500/20"
+                />
+                <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 px-1">
+                  <span>Image Preview Placeholder</span>
+                  <span>Interactive 16:9 Showcase</span>
+                </div>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <h3
+                  className={`${headingFont.className} text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug`}
+                >
+                  {drawerProject.title}
+                </h3>
+              </div>
+
+              {/* Overview Description */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-neutral-400">
+                  Overview & Architecture
+                </h4>
+                <div className="p-4 rounded-xl bg-neutral-900/40 border border-neutral-800/80 text-sm text-neutral-300 leading-relaxed">
+                  {drawerProject.description}
+                </div>
+              </div>
+
+              {/* Technologies */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-neutral-400">
+                  Tech Stack & Tools
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {drawerProject.tags.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="text-xs px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-purple-200 font-mono"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* External Action Links */}
+              <div className="pt-4 border-t border-neutral-800/80 space-y-3">
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  {drawerProject.link && (
+                    <a
+                      href={drawerProject.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium transition shadow-lg shadow-purple-600/25"
+                    >
+                      <ExternalLinkIcon className="w-4 h-4" />
+                      <span>Launch Live Demo</span>
+                    </a>
+                  )}
+                  {drawerProject.github && (
+                    <a
+                      href={drawerProject.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 text-xs font-medium transition"
+                    >
+                      <CodeIcon className="w-4 h-4" />
+                      <span>Source Code</span>
+                    </a>
+                  )}
+                </div>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const proj = drawerProject;
+                      setDrawerProject(null);
+                      setEditingProject({
+                        id: proj.id,
+                        title: proj.title,
+                        description: proj.description,
+                        tags: proj.tags ? proj.tags.join(", ") : "",
+                        github: proj.github || "",
+                        link: proj.link || "",
+                      });
+                      setIsProjectModalOpen(true);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-mono transition"
+                  >
+                    Edit This Project in Admin
+                  </button>
+                )}
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
 
       {/* Modal Login Admin */}
       {isAdminModalOpen && (
