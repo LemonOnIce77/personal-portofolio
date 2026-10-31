@@ -48,6 +48,49 @@ body {
   scrollbar-width: none;
 }
 
+/* Gliding Skills Marquee Animations */
+@keyframes glideLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes glideRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-glide-left {
+  display: flex;
+  width: max-content;
+  animation: glideLeft 58s linear infinite;
+  will-change: transform;
+}
+
+.animate-glide-right {
+  display: flex;
+  width: max-content;
+  animation: glideRight 65s linear infinite;
+  will-change: transform;
+}
+
+.animate-glide-left:hover,
+.animate-glide-right:hover {
+  animation-play-state: paused;
+}
+
+.mask-marquee {
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
 /* Otomatis terapkan ke semua container halaman utama */
 main {
   animation: pageEnter 2.2s cubic-bezier(0.22, 0.6, 0.36, 1) forwards;
@@ -241,7 +284,9 @@ main {
   .aurora-orb,
   .dynamic-stroke::before,
   .animate-page-enter,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-glide-left,
+  .animate-glide-right {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

@@ -311,7 +311,7 @@ function ProjectImagePlaceholder({
 }
 
 export default function Home() {
-  const { name, role, bio, socials, skills } = portfolioData;
+  const { name, role, bio, socials } = portfolioData;
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -324,6 +324,58 @@ export default function Home() {
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
   const [isTogglingAvailability, setIsTogglingAvailability] = useState(false);
+
+  // --- DYNAMIC SKILLS & TECH STACK ---
+  // Automatically incorporates base skills + tags from current/new projects + static archive
+  const allSkills = useMemo(() => {
+    const map = new Map<string, string>();
+
+    // 1. Base portfolio skills
+    portfolioData.skills.forEach((s) => {
+      const trimmed = s.trim();
+      if (trimmed) map.set(trimmed.toLowerCase(), trimmed);
+    });
+
+    // 2. Active projects tags from database or state
+    projects.forEach((proj) => {
+      if (Array.isArray(proj.tags)) {
+        proj.tags.forEach((tag) => {
+          const trimmed = tag.trim();
+          if (trimmed && !map.has(trimmed.toLowerCase())) {
+            map.set(trimmed.toLowerCase(), trimmed);
+          }
+        });
+      }
+    });
+
+    // 3. Static project archive techStack
+    projectsData.forEach((item) => {
+      if (Array.isArray(item.techStack)) {
+        item.techStack.forEach((tech) => {
+          const trimmed = tech.trim();
+          if (trimmed && !map.has(trimmed.toLowerCase())) {
+            map.set(trimmed.toLowerCase(), trimmed);
+          }
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [projects]);
+
+  // Split into two lines for opposing gliding animations
+  const { line1Skills, line2Skills } = useMemo(() => {
+    const line1: string[] = [];
+    const line2: string[] = [];
+    allSkills.forEach((skill, idx) => {
+      if (idx % 2 === 0) {
+        line1.push(skill);
+      } else {
+        line2.push(skill);
+      }
+    });
+    return { line1Skills: line1, line2Skills: line2 };
+  }, [allSkills]);
 
   // Modal Login Admin
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -1175,30 +1227,61 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Skills Section */}
+        {/* Skills Section with Two-Line Opposing Gliding Marquee */}
         <section
           id="skills"
-          className="space-y-6 animate-fade-in opacity-0 delay-200"
+          className="space-y-6 animate-fade-in opacity-0 delay-200 overflow-hidden"
         >
-          <div>
-            <h2
-              className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight`}
-            >
-              Skills & Tech Stack
-            </h2>
-            <p className="text-neutral-400 text-xs sm:text-sm mt-1">
-              Technologies and tools I use regularly.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2 sm:gap-2.5">
-            {skills.map((skill: string) => (
-              <span
-                key={skill}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-neutral-900/50 border border-neutral-800 text-neutral-300 text-xs sm:text-sm hover:border-purple-500/40 transition duration-200 cursor-default backdrop-blur-sm"
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-neutral-800/60 pb-4">
+            <div>
+              <h2
+                className={`${headingFont.className} text-xl sm:text-2xl font-bold tracking-tight text-white`}
               >
-                {skill}
-              </span>
-            ))}
+                Skills & Tech Stack
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm mt-1">
+                Technologies, frameworks, and tools dynamically synchronized with featured projects.
+              </p>
+            </div>
+            <span className="text-[11px] font-mono text-purple-300 bg-purple-950/30 border border-purple-500/30 px-2.5 py-1 rounded-full w-max">
+              {allSkills.length} Technologies
+            </span>
+          </div>
+
+          <div className="space-y-3.5 py-2">
+            {/* 1st Line: Gliding from Right to Left */}
+            <div className="relative overflow-hidden mask-marquee py-0.5">
+              <div className="animate-glide-left flex items-center gap-3">
+                {[...line1Skills, ...line1Skills, ...line1Skills, ...line1Skills].map(
+                  (skill, idx) => (
+                    <span
+                      key={`l1-${skill}-${idx}`}
+                      className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-neutral-900/60 border border-neutral-800 text-neutral-200 text-xs sm:text-sm font-medium hover:border-purple-500/50 hover:bg-neutral-900 hover:text-white transition-colors duration-200 cursor-default backdrop-blur-sm shadow-sm shrink-0"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                      <span>{skill}</span>
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* 2nd Line: Gliding from Left to Right */}
+            <div className="relative overflow-hidden mask-marquee py-0.5">
+              <div className="animate-glide-right flex items-center gap-3">
+                {[...line2Skills, ...line2Skills, ...line2Skills, ...line2Skills].map(
+                  (skill, idx) => (
+                    <span
+                      key={`l2-${skill}-${idx}`}
+                      className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl bg-neutral-900/60 border border-neutral-800 text-neutral-200 text-xs sm:text-sm font-medium hover:border-purple-500/50 hover:bg-neutral-900 hover:text-white transition-colors duration-200 cursor-default backdrop-blur-sm shadow-sm shrink-0"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                      <span>{skill}</span>
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
