@@ -91,6 +91,60 @@ body {
   -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
 }
 
+/* Shiny Smooth Glowing Border Accent for Contact Form */
+@keyframes borderGlowSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.form-glow-border {
+  position: relative;
+  isolation: isolate;
+  border-radius: 1rem;
+}
+
+.form-glow-border::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.02) 0deg,
+    transparent 80deg,
+    rgba(168, 85, 247, 0.25) 130deg,
+    rgba(216, 180, 254, 0.55) 180deg,
+    rgba(147, 51, 234, 0.3) 230deg,
+    transparent 280deg,
+    rgba(255, 255, 255, 0.02) 360deg
+  );
+  animation: borderGlowSpin 16s linear infinite;
+  z-index: 0;
+  will-change: transform;
+}
+
+.form-glow-blur {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(168, 85, 247, 0.2) 130deg,
+    rgba(192, 132, 252, 0.3) 180deg,
+    rgba(147, 51, 234, 0.2) 230deg,
+    transparent 280deg,
+    transparent 360deg
+  );
+  filter: blur(28px);
+  animation: borderGlowSpin 16s linear infinite;
+  z-index: -1;
+  will-change: transform;
+}
+
 /* Otomatis terapkan ke semua container halaman utama */
 main {
   animation: pageEnter 2.2s cubic-bezier(0.22, 0.6, 0.36, 1) forwards;
@@ -286,7 +340,9 @@ main {
   .animate-page-enter,
   .animate-fade-in,
   .animate-glide-left,
-  .animate-glide-right {
+  .animate-glide-right,
+  .form-glow-border::before,
+  .form-glow-blur {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

@@ -1300,87 +1300,98 @@ export default function Home() {
             opportunities, or innovative project ideas.
           </p>
 
-          <form
-            onSubmit={handleContactSubmit}
-            className="max-w-md mx-auto mt-6 bg-neutral-900/30 p-4 sm:p-8 rounded-2xl border border-neutral-800/80 backdrop-blur-sm text-left space-y-3.5 sm:space-y-4 shadow-xl"
-          >
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                disabled={isSubmitting}
-                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50"
-                placeholder="John Doe"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                disabled={isSubmitting}
-                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition disabled:opacity-50"
-                placeholder="john@example.com"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                disabled={isSubmitting}
-                rows={4}
-                className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/50 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition resize-none disabled:opacity-50"
-                placeholder="How can I help you?"
-              ></textarea>
-            </div>
+          <div className="relative max-w-md mx-auto mt-6 group">
+            {/* Ambient Subtle Glow behind the form */}
+            <div
+              aria-hidden="true"
+              className="form-glow-blur absolute -inset-1 rounded-2xl opacity-25 group-hover:opacity-45 transition duration-1000 pointer-events-none"
+            />
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full inline-flex justify-center items-center gap-2 px-6 py-2.5 sm:py-3 mt-1 sm:mt-2 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-sm sm:text-base hover:bg-neutral-200 transition duration-200 shadow-lg shadow-purple-900/20 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                "Sending..."
-              ) : (
-                <>
-                  <MailIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Send Message
-                </>
-              )}
-            </button>
+            {/* Glowing Shiny Border Wrapper */}
+            <div className="form-glow-border relative rounded-2xl p-[1px] overflow-hidden shadow-2xl">
+              <form
+                onSubmit={handleContactSubmit}
+                className="relative z-10 bg-[#09090e]/95 backdrop-blur-xl p-5 sm:p-8 rounded-[15px] text-left space-y-3.5 sm:space-y-4"
+              >
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+                  >
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    disabled={isSubmitting}
+                    className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/70 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20 transition disabled:opacity-50"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    disabled={isSubmitting}
+                    className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/70 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20 transition disabled:opacity-50"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block text-xs sm:text-sm font-medium text-neutral-400 mb-1"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    disabled={isSubmitting}
+                    rows={4}
+                    className="w-full px-3.5 py-2.5 sm:py-3 rounded-lg bg-neutral-950/70 border border-neutral-800 text-sm text-neutral-200 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/20 transition resize-none disabled:opacity-50"
+                    placeholder="How can I help you?"
+                  ></textarea>
+                </div>
 
-            {submitStatus === "success" && (
-              <p className="text-emerald-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
-                Message sent successfully! I&apos;ll get back to you soon.
-              </p>
-            )}
-            {submitStatus === "error" && (
-              <p className="text-red-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
-                {errorMessage}
-              </p>
-            )}
-          </form>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full inline-flex justify-center items-center gap-2 px-6 py-2.5 sm:py-3 mt-1 sm:mt-2 rounded-lg bg-neutral-100 text-neutral-950 font-semibold text-sm sm:text-base hover:bg-white hover:shadow-[0_0_24px_rgba(168,85,247,0.35)] transition-all duration-300 shadow-lg shadow-purple-900/20 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      <MailIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Send Message
+                    </>
+                  )}
+                </button>
+
+                {submitStatus === "success" && (
+                  <p className="text-emerald-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
+                    Message sent successfully! I&apos;ll get back to you soon.
+                  </p>
+                )}
+                {submitStatus === "error" && (
+                  <p className="text-red-400 text-xs sm:text-sm text-center mt-3 animate-fade-in">
+                    {errorMessage}
+                  </p>
+                )}
+              </form>
+            </div>
+          </div>
         </section>
       </main>
 
